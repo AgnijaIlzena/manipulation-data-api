@@ -1,4 +1,109 @@
+import io
+import pandas as pd
 from database import get_connection
+
+# Maps known CSV column sets → (table_name, column_mapping)
+KNOWN_SCHEMAS = {
+    frozenset(["customer_id", "customer_unique_id", "customer_zip_code_prefix", "customer_city", "customer_state"]): (
+        "clients",
+        {"customer_id": "client_id", "customer_unique_id": "client_unique_id",
+         "customer_zip_code_prefix": "code_postal", "customer_city": "ville", "customer_state": "etat"},
+    ),
+    frozenset(["order_id", "customer_id", "order_status", "order_purchase_timestamp",
+               "order_approved_at", "order_delivered_carrier_date",
+               "order_delivered_customer_date", "order_estimated_delivery_date"]): (
+        "commandes",
+        {"order_id": "commande_id", "customer_id": "client_id", "order_status": "statut",
+         "order_purchase_timestamp": "date_achat", "order_approved_at": "date_approbation",
+         "order_delivered_carrier_date": "date_expedition",
+         "order_delivered_customer_date": "date_livraison",
+         "order_estimated_delivery_date": "date_livraison_estimee"},
+    ),
+    frozenset(["product_id", "product_category_name", "product_name_lenght",
+               "product_description_lenght", "product_photos_qty", "product_weight_g",
+               "product_length_cm", "product_height_cm", "product_width_cm"]): (
+        "produits",
+        {"product_id": "produit_id", "product_category_name": "categorie",
+         "product_name_lenght": "longueur_nom", "product_description_lenght": "longueur_description",
+         "product_photos_qty": "nb_photos", "product_weight_g": "poids_g",
+         "product_length_cm": "longueur_cm", "product_height_cm": "hauteur_cm",
+         "product_width_cm": "largeur_cm"},
+    ),
+    frozenset(["seller_id", "seller_zip_code_prefix", "seller_city", "seller_state"]): (
+        "vendeurs",
+        {"seller_id": "vendeur_id", "seller_zip_code_prefix": "code_postal",
+         "seller_city": "ville", "seller_state": "etat"},
+    ),
+    frozenset(["order_id", "payment_sequential", "payment_type",
+               "payment_installments", "payment_value"]): (
+        "paiements",
+        {"order_id": "commande_id", "payment_sequential": "sequence",
+         "payment_type": "type_paiement", "payment_installments": "nb_versements",
+         "payment_value": "montant"},
+    ),
+    frozenset(["review_id", "order_id", "review_score", "review_comment_title",
+               "review_comment_message", "review_creation_date", "review_answer_timestamp"]): (
+        "avis",
+        {"review_id": "avis_id", "order_id": "commande_id", "review_score": "note",
+         "review_comment_title": "titre", "review_comment_message": "commentaire",
+         "review_creation_date": "date_creation", "review_answer_timestamp": "date_reponse"},
+    ),
+}
+
+
+def _to_python(v):
+    if v is None or v is pd.NA:
+        return None
+    if isinstance(v, float) and pd.isna(v):
+        return None
+    if hasattr(v, "item"):
+        return v.item()
+    return v
+
+
+def detect_and_import(file_storage):
+    """Reads an uploaded CSV, detects the table by columns, cleans and inserts."""
+    content = file_storage.read().decode("utf-8", errors="replace")
+    df = pd.read_csv(io.StringIO(content))
+
+    # Detect schema by matching column set
+    csv_columns = frozenset(df.columns.str.strip())
+    matched = None
+    for known_cols, (table, mapping) in KNOWN_SCHEMAS.items():
+        if known_cols == csv_columns:
+            matched = (table, mapping)
+            break
+
+    if matched is None:
+        raise ValueError(
+            f"Colonnes non reconnues : {list(df.columns)}. "
+            "Fichier CSV non compatible avec les tables connues."
+        )
+
+    table, mapping = matched
+
+    # Clean and map
+    df = df.rename(columns=mapping)
+    df = df.where(pd.notnull(df), None)
+
+    # Insert
+    conn = get_connection()
+    cursor = conn.cursor()
+    columns = ", ".join(df.columns)
+    placeholders = ", ".join(["%s"] * len(df.columns))
+    sql = f"INSERT IGNORE INTO {table} ({columns}) VALUES ({placeholders})"
+    records = [tuple(_to_python(v) for v in row) for row in df.itertuples(index=False, name=None)]
+
+    total = 0
+    for i in range(0, len(records), 500):
+        cursor.executemany(sql, records[i:i + 500])
+        total += cursor.rowcount
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return {"table": table, "lignes": total, "statut": "succes"}
 
 
 def _serialize(row):
