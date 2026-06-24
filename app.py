@@ -23,6 +23,8 @@ sentry_sdk.init(
     integrations=[FlaskIntegration()],
     send_default_pii=True,
     traces_sample_rate=1.0,
+    release=os.getenv("SENTRY_RELEASE", "dev"),
+    environment=os.getenv("SENTRY_ENVIRONMENT", "development"),
 )
 
 app = Flask(__name__)

@@ -10,9 +10,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      SENTRY_RELEASE: ${{ github.sha }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so Sentry can read commits
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -24,3 +29,14 @@ jobs:
 
       - name: Run tests
         run: pytest tests/ -v
+
+      - name: Create Sentry release
+        if: success() && github.event_name == 'push'
+        uses: getsentry/action-release@v3
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: production
+          version: ${{ github.sha }}
