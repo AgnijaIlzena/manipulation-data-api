@@ -11,8 +11,13 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
+kagglehub==1.0.2
 MarkupSafe==3.0.3
 mysql-connector-python==9.7.0
+pandas==3.0.3
+pytest==9.1.1
+python-dotenv==1.2.2
 referencing==0.37.0
 rpds-py==2026.5.1
+sentry-sdk==2.63.0
 Werkzeug==3.1.8
