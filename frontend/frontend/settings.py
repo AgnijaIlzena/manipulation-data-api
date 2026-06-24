@@ -10,7 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +48,16 @@ INSTALLED_APPS = [
 
 # Flask API base URL
 FLASK_API_URL = "http://127.0.0.1:5000"
+
+# Sentry
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[DjangoIntegration()],
+    send_default_pii=True,
+    traces_sample_rate=1.0,
+    release=os.getenv("SENTRY_RELEASE", "dev"),
+    environment="django-frontend",
+)
 
 # Max upload size: 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024

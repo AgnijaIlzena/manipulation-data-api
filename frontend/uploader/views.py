@@ -4,6 +4,11 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 
 
+def debug_sentry(request):
+    division_by_zero = 1 / 0
+    return None
+
+
 def upload(request):
     if request.method == "POST":
         csv_file = request.FILES.get("csv_file")
