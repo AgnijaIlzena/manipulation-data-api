@@ -1,4 +1,6 @@
 aniso8601==10.0.1
+django>=4.2
+requests>=2.31
 attrs==26.1.0
 blinker==1.9.0
 click==8.4.1

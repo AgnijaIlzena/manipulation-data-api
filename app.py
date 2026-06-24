@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
 
@@ -15,6 +15,7 @@ from olist_repository import (
     get_revenue_by_state,
     get_top_categories,
 )
+from generic_import import auto_import
 
 load_dotenv()
 
@@ -208,6 +209,34 @@ class TopCategories(Resource):
     def get(self):
         """Top 10 des catégories les plus vendues (par nombre de ventes)"""
         return get_top_categories(limit=10)
+
+
+# ---------------------------------------------------------------------------
+# Route upload CSV (appelée par Django)
+# ---------------------------------------------------------------------------
+
+@olist_ns.route("/upload")
+class Upload(Resource):
+    @olist_ns.doc(description="Reçoit un fichier CSV, détecte le type, nettoie et insère en base.")
+    @olist_ns.response(200, "Import réussi")
+    @olist_ns.response(400, "Fichier manquant ou format inconnu")
+    @olist_ns.response(500, "Erreur lors de l'import")
+    def post(self):
+        """Upload CSV → détection automatique → nettoyage → insertion MySQL"""
+        if "file" not in request.files:
+            api.abort(400, "Aucun fichier fourni")
+
+        file = request.files["file"]
+        if file.filename == "":
+            api.abort(400, "Nom de fichier vide")
+
+        try:
+            result = auto_import(file)
+            return result, 200
+        except ValueError as e:
+            api.abort(400, str(e))
+        except Exception as e:
+            api.abort(500, f"Erreur import : {str(e)}")
 
 
 # ---------------------------------------------------------------------------
