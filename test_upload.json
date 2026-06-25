@@ -1,0 +1,7 @@
+[
+  { "product_name": "Laptop", "category": "electronics", "price": 999.99, "stock": 42, "in_stock": true },
+  { "product_name": "Desk Chair", "category": "furniture", "price": 249.50, "stock": 15, "in_stock": true },
+  { "product_name": "Coffee Mug", "category": "kitchen", "price": 12.00, "stock": 0, "in_stock": false },
+  { "product_name": "Notebook", "category": "stationery", "price": 4.99, "stock": 200, "in_stock": true },
+  { "product_name": "Headphones", "category": "electronics", "price": 149.00, "stock": 8, "in_stock": true }
+]

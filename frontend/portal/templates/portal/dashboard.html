@@ -1,0 +1,82 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Dashboard — Data Portal{% endblock %}
+
+{% block content %}
+<h1 class="fw-bold mb-4">Dashboard</h1>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-primary text-white">
+            <div class="card-body text-center py-4">
+                <div class="display-5 fw-bold">{{ stats.nb_clients }}</div>
+                <div class="mt-1 opacity-75">Clients</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-success text-white">
+            <div class="card-body text-center py-4">
+                <div class="display-5 fw-bold">{{ stats.nb_commandes }}</div>
+                <div class="mt-1 opacity-75">Commandes</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-info text-white">
+            <div class="card-body text-center py-4">
+                <div class="display-5 fw-bold">{{ stats.nb_produits }}</div>
+                <div class="mt-1 opacity-75">Produits</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-warning text-dark">
+            <div class="card-body text-center py-4">
+                <div class="display-5 fw-bold">{{ stats.nb_vendeurs }}</div>
+                <div class="mt-1 opacity-75">Vendeurs</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-secondary text-white">
+            <div class="card-body text-center py-4">
+                <div class="display-5 fw-bold">{{ stats.nb_paiements }}</div>
+                <div class="mt-1 opacity-75">Paiements</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-dark text-white">
+            <div class="card-body text-center py-4">
+                <div class="display-5 fw-bold">{{ stats.nb_avis }}</div>
+                <div class="mt-1 opacity-75">Avis</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if top_categories %}
+<h4 class="mb-3">Top 5 catégories</h4>
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Catégorie</th>
+                <th>Ventes</th>
+                <th>Revenus (BRL)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cat in top_categories %}
+            <tr>
+                <td class="fw-semibold">{{ cat.categorie }}</td>
+                <td>{{ cat.nb_ventes }}</td>
+                <td class="text-success fw-semibold">{{ cat.revenus_total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

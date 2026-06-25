@@ -1,0 +1,60 @@
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+.nav-link.active {
+    font-weight: 600;
+}
+
+/* Cards */
+.card {
+    border-radius: 0.75rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Tables */
+.table th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Footer */
+.footer {
+    font-size: 0.875rem;
+}
+
+/* Page titles */
+h1 {
+    font-size: 1.8rem;
+    color: #212529;
+}
+
+/* Dashboard stat cards */
+.display-5 {
+    font-size: 2.5rem;
+}

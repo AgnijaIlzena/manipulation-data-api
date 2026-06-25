@@ -1,0 +1,34 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Rapports — Data Portal{% endblock %}
+
+{% block content %}
+<h1 class="fw-bold mb-1">Tables MySQL</h1>
+<p class="text-muted mb-4">Toutes les tables dans la base <code>ynov-db</code></p>
+
+{% if reports %}
+<div class="table-responsive">
+    <table class="table table-hover table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Table</th>
+                <th>Lignes (estimé)</th>
+                <th>Créée le</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reports %}
+            <tr>
+                <td class="fw-semibold"><code>{{ r.table_name }}</code></td>
+                <td>{{ r.table_rows|default:"—" }}</td>
+                <td class="text-muted small">{{ r.create_time|default:"—" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="text-muted small">{{ reports|length }} table(s) trouvée(s).</p>
+{% else %}
+<div class="alert alert-info">Aucune table trouvée.</div>
+{% endif %}
+{% endblock %}

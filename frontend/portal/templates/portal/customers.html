@@ -1,0 +1,34 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Clients — Data Portal{% endblock %}
+
+{% block content %}
+<h1 class="fw-bold mb-1">Clients</h1>
+<p class="text-muted mb-4">100 premiers clients — source : table <code>clients</code> MySQL</p>
+
+{% if customers %}
+<div class="table-responsive">
+    <table class="table table-hover table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>ID client</th>
+                <th>Ville</th>
+                <th>État</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in customers %}
+            <tr>
+                <td><code class="small text-muted">{{ c.client_id }}</code></td>
+                <td>{{ c.ville }}</td>
+                <td><span class="badge bg-secondary">{{ c.etat }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="text-muted small">{{ customers|length }} client(s) affichés.</p>
+{% else %}
+<div class="alert alert-info">Aucun client trouvé dans la base MySQL.</div>
+{% endif %}
+{% endblock %}
