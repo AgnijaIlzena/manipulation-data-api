@@ -1,6 +1,7 @@
 import requests
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from . import db
 
@@ -29,6 +30,7 @@ def reports(request):
     return render(request, 'portal/reports.html', {'reports': rows})
 
 
+@login_required
 def dashboard(request):
     stats = db.query_one("""
         SELECT

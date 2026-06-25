@@ -49,6 +49,11 @@ INSTALLED_APPS = [
 # Flask API base URL
 FLASK_API_URL = "http://127.0.0.1:5000"
 
+# Authentication redirects
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
+
 # Sentry
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
