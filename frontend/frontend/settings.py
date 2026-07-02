@@ -143,3 +143,25 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Configuration du cache Django avec Redis.
+CACHES = {
+    "default": {
+        # Backend fourni par django-redis.
+        "BACKEND": "django_redis.cache.RedisCache",
+
+        # Adresse du serveur Redis local.
+        # 127.0.0.1 = machine locale
+        # 6379 = port Redis
+        # 1 = base Redis utilisée
+        "LOCATION": "redis://default@127.0.0.1:6379/1",
+
+        # Client Redis utilisé par django-redis.
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+
+        # Durée par défaut en secondes.
+        "TIMEOUT": 300,
+    }
+}

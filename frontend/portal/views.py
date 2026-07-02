@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from . import db
+from portal.services.dashboard_service import get_dashboard_stats
 
 
 def home(request):
@@ -32,30 +33,8 @@ def reports(request):
 
 @login_required
 def dashboard(request):
-    stats = db.query_one("""
-        SELECT
-            (SELECT COUNT(*) FROM clients)   AS nb_clients,
-            (SELECT COUNT(*) FROM commandes) AS nb_commandes,
-            (SELECT COUNT(*) FROM produits)  AS nb_produits,
-            (SELECT COUNT(*) FROM vendeurs)  AS nb_vendeurs,
-            (SELECT COUNT(*) FROM paiements) AS nb_paiements,
-            (SELECT COUNT(*) FROM avis)      AS nb_avis
-    """)
-    top_categories = db.query("""
-        SELECT pr.categorie,
-               COUNT(*)               AS nb_ventes,
-               ROUND(SUM(ac.prix), 2) AS revenus_total
-        FROM articles_commande ac
-        JOIN produits pr ON ac.produit_id = pr.produit_id
-        WHERE pr.categorie IS NOT NULL
-        GROUP BY pr.categorie
-        ORDER BY nb_ventes DESC
-        LIMIT 5
-    """)
-    return render(request, 'portal/dashboard.html', {
-        'stats': stats,
-        'top_categories': top_categories,
-    })
+    stats = get_dashboard_stats()
+    return render(request, 'portal/dashboard.html', {'stats': stats})
 
 
 def upload(request):
